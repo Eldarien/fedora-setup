@@ -411,14 +411,13 @@ configure_dnf() {
     add_or_update "keepcache" "True"
 
     echo "DNF configuration updated."
-    #grep -E "^(max_parallel_downloads|fastestmirror|defaultyes|keepcache)=" "$CONF" || true
 }
 
 rpm_fusion() {
     # Ask user whether RPM Fusion should be enabled
     echo -ne "\n"
     RPMFUSION_ENABLED=0
-    read -rp "Install RPM Fusion repositories and multimedia codecs? [y/N]: " INSTALL_RPMFUSION
+    read -rp "Install RPM Fusion repositories? [y/N]: " INSTALL_RPMFUSION
     case "${INSTALL_RPMFUSION,,}" in
         y|yes)
             RPMFUSION_ENABLED=1;;
@@ -430,23 +429,11 @@ rpm_fusion() {
 
 # Starting functions
 background_checks
-#clear
-#logo
 userinfo
-#clear
-#logo
 diskpart
-#clear
-#logo
 filesystem
-#clear
-#logo
 timezone
-#clear
-#logo
 keymap
-#clear
-#logo
 set_locale
 configure_dnf
 rpm_fusion
@@ -696,7 +683,7 @@ echo -ne "
   Installing packages:
 "
 # Core OS and kernel
-dnf -y --releasever=44 --installroot=/mnt --use-host-config install @core NetworkManager-tui NetworkManager-wifi wpa_supplicant htop fastfetch pciutils usbutils
+dnf -y --releasever=44 --installroot=/mnt --use-host-config install @core NetworkManager-tui NetworkManager-wifi wpa_supplicant ffmpeg-free htop fastfetch pciutils usbutils
 dnf -y --releasever=44 --installroot=/mnt --use-host-config install grub2-efi-x64 grub2-efi-x64-modules shim-x64 grub2-tools grub2-pc efibootmgr
 dnf -y --releasever=44 --installroot=/mnt --use-host-config install kernel iwlwifi\*
 # Language packs
@@ -713,14 +700,7 @@ if [[ "$VIRT_TYPE" == "qemu" || "$VIRT_TYPE" == "kvm" ]]; then
     dnf -y --releasever=44 --installroot=/mnt --use-host-config install -y qemu-guest-agent spice-vdagent
 fi
 
-# RPM Fusion
-if [[ "$RPMFUSION_ENABLED" -eq 1 ]]; then
-    dnf -y --releasever=44 --installroot=/mnt --use-host-config install @multimedia ffmpeg-free
-    dnf -y --releasever=44 --installroot=/mnt --use-host-config install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-    dnf -y --releasever=44 --installroot=/mnt --use-host-config update @core
-    dnf -y --releasever=44 --installroot=/mnt --use-host-config update @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
-    dnf -y --releasever=44 --installroot=/mnt --use-host-config swap ffmpeg-free ffmpeg --allowerasing
-fi
+
 
 setenforce 0
 
@@ -761,6 +741,16 @@ grub2-install "$DISK"
 
 echo "[chroot] Generating GRUB config..."
 grub2-mkconfig -o /boot/grub2/grub.cfg
+
+# RPM Fusion
+if [[ "$RPMFUSION_ENABLED" -eq 1 ]]; then
+    echo "[chroot] Installing RPM Fusion..."
+    dnf -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    dnf -y update @core
+    dnf -y update @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
+    dnf -y swap ffmpeg-free ffmpeg --allowerasing
+fi
+
 
 echo "[chroot] Creating users..."
 
