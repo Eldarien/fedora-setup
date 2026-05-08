@@ -679,6 +679,7 @@ mount --bind /dev  /mnt/dev
 mount --bind /proc /mnt/proc
 mount --bind /sys  /mnt/sys
 mount --bind /run  /mnt/run
+mount --bind /dev/pts  /mnt/dev/pts
 
 # Ensure efivars visible inside chroot (UEFI case)
 if [ -d /sys/firmware/efi/efivars ]; then
