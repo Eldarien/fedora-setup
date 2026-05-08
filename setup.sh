@@ -709,7 +709,11 @@ cp /etc/dnf/dnf.conf /mnt/etc/dnf/dnf.conf
 cp /etc/default/grub /mnt/etc/default/grub
 sed -i \
   -e 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=3/' \
+  -e 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=true/' \
   /mnt/etc/default/grub
+
+grep -q '^GRUB_DISABLE_OS_PROBER=' /mnt/etc/default/grub || \
+  echo 'GRUB_DISABLE_OS_PROBER=true' >> /mnt/etc/default/grub
 
 echo "[*] Applying system settings..."
 chroot /mnt /bin/bash <<EOF
