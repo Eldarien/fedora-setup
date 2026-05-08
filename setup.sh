@@ -714,12 +714,11 @@ fi
 
 # RPM Fusion
 if [[ "$RPMFUSION_ENABLED" -eq 1 ]]; then
-    dnf -y --releasever=44 --installroot=/mnt --use-host-config install @multimedia
+    dnf -y --releasever=44 --installroot=/mnt --use-host-config install @multimedia ffmpeg-free
     dnf -y --releasever=44 --installroot=/mnt --use-host-config install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y --releasever=44 --installroot=/mnt --use-host-config update @core
-    dnf -y --releasever=44 --installroot=/mnt --use-host-config install rpmfusion-\*-appstream-data
-    dnf -y --releasever=44 --installroot=/mnt --use-host-config swap ffmpeg-free ffmpeg --allowerasing
     dnf -y --releasever=44 --installroot=/mnt --use-host-config update @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
+    dnf -y --releasever=44 --installroot=/mnt --use-host-config swap ffmpeg-free ffmpeg --allowerasing
 fi
 
 setenforce 0
