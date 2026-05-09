@@ -3,7 +3,7 @@
 This repository contains an automated installation and configuration script for **Fedora 44**. It is designed to perform a full system setup from a live environment, arch-style.
 Network connectivity is required during installation for package retrieval (Net-Install). UEFI and BIOS systems supported.
 
-## Important Requirements
+## Requirements
 
 - Must be run as `root`
 - Must be executed from a Fedora 44 Live ISO environment
@@ -46,17 +46,20 @@ chmod +x setup.sh
 
 ## After Completion
 
-Once the script finishes:
-
-- Ensure all operations completed successfully
-- If needed, you can chroot installed system and install additional packages or make changes:
+Once the script finishes, if needed, you can chroot into installed system and install additional packages or make changes:
 ```bash
 chroot /mnt /bin/bash
 ```
-- Reboot the system:
 
+Reboot the system with:
 ```bash
 reboot
 ```
-
 Remove the live media when prompted or after shutdown.
+
+After first boot and mandatory restart, Network Manager 'nmtui' is available to configure network/wifi.
+
+Now you can install your desktop, for example:
+```bash
+sudo dnf -y install @kde-desktop
+```
